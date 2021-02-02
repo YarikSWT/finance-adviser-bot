@@ -168,11 +168,11 @@ def main():
     dp.add_handler(show_data_handler)
 
     # Start the Bot
-    if (ENV != 'PRODUCTION'):
+    if ENV != 'PRODUCTION':
         updater.start_polling()
     else:
         webhook_address = PUBLIC_ADDRESS + "/" + TELEGRAM_TOKEN
-        logger.log("Set Webhook on {} and PORT={}".format(webhook_address, PORT))
+        logger.info("Set Webhook on {} and PORT={}".format(webhook_address, PORT))
         updater.start_webhook(listen="0.0.0.0",
                               port=PORT,
                               url_path=TELEGRAM_TOKEN)
