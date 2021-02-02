@@ -171,10 +171,12 @@ def main():
     if (ENV != 'PRODUCTION'):
         updater.start_polling()
     else:
+        webhook_address = PUBLIC_ADDRESS + "/" + TELEGRAM_TOKEN
+        logger.log("Set Webhook on {} and PORT={}".format(webhook_address, PORT))
         updater.start_webhook(listen="0.0.0.0",
                               port=PORT,
                               url_path=TELEGRAM_TOKEN)
-        updater.bot.set_webhook(PUBLIC_ADDRESS + "/" + TELEGRAM_TOKEN)
+        updater.bot.set_webhook(webhook_address)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
