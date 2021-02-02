@@ -9,12 +9,13 @@ the Dispatcher and registered at their respective places.
 Then, the bot is started and runs until we press Ctrl-C on the command line.
 Usage:
 Example of a bot-user conversation using ConversationHandler.
-Send /start to initiate the conversation.
+Send /start to initiate the conversation.`
 Press Ctrl-C on the command line or send a signal to the process to stop the
 bot.
 """
 
 import logging
+from telegram_bot.config import MONGO_URI, TELEGRAM_TOKEN, ENV, PUBLIC_ADDRESS, RUNNING_ADDRESS, PORT
 
 from telegram import ReplyKeyboardMarkup, Update
 from telegram_bot.mongo_persistence import MongoPersistence
@@ -129,7 +130,7 @@ def done(update: Update, context: CallbackContext) -> None:
 def main():
     # Create the Updater and pass it your bot's token.
     pp = MongoPersistence()
-    updater = Updater("1381540699:AAE_06_WD5TQ39Ab5TwtPJRcOM8Wdb9lk-g", persistence=pp, use_context=True)
+    updater = Updater(TELEGRAM_TOKEN, persistence=pp, use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -167,7 +168,13 @@ def main():
     dp.add_handler(show_data_handler)
 
     # Start the Bot
-    updater.start_polling()
+    if (ENV != 'PRODUCTION'):
+        updater.start_polling()
+    else:
+        updater.start_webhook(listen="0.0.0.0",
+                              port=PORT,
+                              url_path=TELEGRAM_TOKEN)
+        updater.bot.set_webhook(PUBLIC_ADDRESS + "/" + TELEGRAM_TOKEN)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since

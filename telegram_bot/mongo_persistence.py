@@ -1,6 +1,6 @@
 from telegram.ext import BasePersistence
 from collections import defaultdict
-from telegram_bot.config import mongo_URI
+from telegram_bot.config import MONGO_URI
 from copy import deepcopy
 from telegram.utils.helpers import decode_user_chat_data_from_json, decode_conversations_from_json, encode_conversations_to_json
 import mongoengine
@@ -27,7 +27,7 @@ class DBHelper():
     """Class to add and get documents from a mongo database using mongoengine
     """
     def __init__(self, dbname="persistencedb"):
-        mongoengine.connect(host=mongo_URI, db=dbname)
+        mongoengine.connect(host=MONGO_URI, db=dbname)
     def add_item(self, data, collection):
         if collection == "Conversations":
             document = Conversations(obj=data)
