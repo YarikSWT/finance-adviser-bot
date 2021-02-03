@@ -15,10 +15,10 @@ bot.
 """
 
 import logging
-from telegram_bot.config import MONGO_URI, TELEGRAM_TOKEN, ENV, PUBLIC_ADDRESS, RUNNING_ADDRESS, PORT
+from config import MONGO_URI, TELEGRAM_TOKEN, ENV, PUBLIC_ADDRESS, RUNNING_ADDRESS, PORT
 
 from telegram import ReplyKeyboardMarkup, Update
-from telegram_bot.mongo_persistence import MongoPersistence
+from mongo_persistence import MongoPersistence
 from telegram.ext import (
     Updater,
     CommandHandler,
@@ -130,7 +130,9 @@ def done(update: Update, context: CallbackContext) -> None:
 def main():
     # Create the Updater and pass it your bot's token.
     pp = MongoPersistence()
-    updater = Updater(TELEGRAM_TOKEN, persistence=pp, use_context=True)
+    updater = Updater(TELEGRAM_TOKEN,
+                      persistence=pp,
+                      use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher

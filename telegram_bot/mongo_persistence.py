@@ -1,6 +1,6 @@
 from telegram.ext import BasePersistence
 from collections import defaultdict
-from telegram_bot.config import MONGO_URI
+from config import MONGO_URI
 from copy import deepcopy
 from telegram.utils.helpers import decode_user_chat_data_from_json, decode_conversations_from_json, encode_conversations_to_json
 import mongoengine
