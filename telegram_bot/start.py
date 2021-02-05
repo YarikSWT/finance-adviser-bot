@@ -15,18 +15,21 @@ bot.
 """
 
 import logging
-from config import MONGO_URI, TELEGRAM_TOKEN, ENV, PUBLIC_ADDRESS, RUNNING_ADDRESS, PORT
+from config import TELEGRAM_TOKEN, ENV, PUBLIC_ADDRESS, RUNNING_ADDRESS, PORT
 
-from telegram import ReplyKeyboardMarkup, Update
+from telegram import ReplyKeyboardMarkup, Update, InlineKeyboardButton, InlineKeyboardMarkup
 from mongo_persistence import MongoPersistence
 from telegram.ext import (
     Updater,
     CommandHandler,
+    CallbackQueryHandler,
     MessageHandler,
     Filters,
     ConversationHandler,
     CallbackContext,
 )
+import utils
+from modules.registration import RegistrationModule
 
 
 # Enable logging
@@ -37,94 +40,27 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
-
-reply_keyboard = [
-    ['Age', 'Favourite colour'],
-    ['Number of siblings', 'Something else...'],
-    ['Done'],
-]
-markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
-
-
-def facts_to_str(user_data):
-    facts = list()
-
-    for key, value in user_data.items():
-        facts.append(f'{key} - {value}')
-
-    return "\n".join(facts).join(['\n', '\n'])
-
+OPEN_TRANSACTIONS, OPEN_HISTORY, OPEN_SETTINGS = range(3)
+BASE_MENU = 0
 
 def start(update: Update, context: CallbackContext) -> None:
-    reply_text = "Hi! My name is Doctor Botter."
-    if context.user_data:
-        reply_text += (
-            f" You already told me your {', '.join(context.user_data.keys())}. Why don't you "
-            f"tell me something more about yourself? Or change anything I already know."
-        )
-    else:
-        reply_text += (
-            " I will hold a more complex conversation with you. Why don't you tell me "
-            "something about yourself?"
-        )
-    update.message.reply_text(reply_text, reply_markup=markup)
-
-    return CHOOSING
-
-
-def regular_choice(update: Update, context: CallbackContext) -> None:
-    text = update.message.text.lower()
-    context.user_data['choice'] = text
-    if context.user_data.get(text):
-        reply_text = (
-            f'Your {text}, I already know the following about that: {context.user_data[text]}'
-        )
-    else:
-        reply_text = f'Your {text}? Yes, I would love to hear about that!'
+    reply_text = "Hi! My name is AI Bot. Please, /register"
     update.message.reply_text(reply_text)
 
-    return TYPING_REPLY
-
-
-def custom_choice(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text(
-        'Alright, please send me the category first, ' 'for example "Most impressive skill"'
-    )
-
-    return TYPING_CHOICE
-
-
-def received_information(update: Update, context: CallbackContext) -> None:
-    text = update.message.text
-    category = context.user_data['choice']
-    context.user_data[category] = text.lower()
-    del context.user_data['choice']
-
-    update.message.reply_text(
-        "Neat! Just so you know, this is what you already told me:"
-        f"{facts_to_str(context.user_data)}"
-        "You can tell me more, or change your opinion on "
-        "something.",
-        reply_markup=markup,
-    )
-
-    return CHOOSING
-
-
-def show_data(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text(
-        f"This is what you already told me: {facts_to_str(context.user_data)}"
-    )
-
-
-def done(update: Update, context: CallbackContext) -> None:
-    if 'choice' in context.user_data:
-        del context.user_data['choice']
-
-    update.message.reply_text(
-        "I learned these facts about you:" f"{facts_to_str(context.user_data)}" "Until next time!"
-    )
-    return ConversationHandler.END
+def base_menu(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    query.answer()
+    balance = context.user_data['balance']
+    currency = context.user_data['currency']
+    name = context.user_data['name']
+    reply_text = f"Hey, {name} \nYour balance: {balance}{currency}\n Keep going!"
+    button_list = [
+        InlineKeyboardButton("Add Transaction", callback_data=str(OPEN_TRANSACTIONS)),
+        InlineKeyboardButton("History", callback_data=str(OPEN_HISTORY)),
+        InlineKeyboardButton("Settings", callback_data=str(OPEN_SETTINGS))
+    ]
+    reply_markup = InlineKeyboardMarkup(utils.build_menu(button_list, n_cols=2))
+    query.edit_message_text(text=reply_text, reply_markup=reply_markup)
 
 
 def main():
@@ -137,41 +73,20 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    # Add conversation handler with the states CHOOSING, TYPING_CHOICE and TYPING_REPLY
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
-        states={
-            CHOOSING: [
-                MessageHandler(
-                    Filters.regex('^(Age|Favourite colour|Number of siblings)$'), regular_choice
-                ),
-                MessageHandler(Filters.regex('^Something else...$'), custom_choice),
-            ],
-            TYPING_CHOICE: [
-                MessageHandler(
-                    Filters.text & ~(Filters.command | Filters.regex('^Done$')), regular_choice
-                )
-            ],
-            TYPING_REPLY: [
-                MessageHandler(
-                    Filters.text & ~(Filters.command | Filters.regex('^Done$')),
-                    received_information,
-                )
-            ],
-        },
-        fallbacks=[MessageHandler(Filters.regex('^Done$'), done)],
-        name="my_conversation",
-        persistent=True,
-    )
+    start_handler = CommandHandler('start', start)
+    dp.add_handler(start_handler)
 
-    dp.add_handler(conv_handler)
+    menu_handler = CallbackQueryHandler(base_menu, pattern='^' + 'OPEN_BASE_MENU' + '$')
+    dp.add_handler(menu_handler)
 
-    show_data_handler = CommandHandler('show_data', show_data)
-    dp.add_handler(show_data_handler)
+    reg_module = RegistrationModule()
+    registration_handler = reg_module.get_handler()
+    dp.add_handler(registration_handler)
 
     # Start the Bot
-    if ENV != 'PRODUCTION':
+    if ENV != 'PROD':
         updater.start_polling()
+        logger.info("Started in Polling mode...")
     else:
         webhook_address = PUBLIC_ADDRESS + "/" + TELEGRAM_TOKEN
         logger.info("Set Webhook on {} and PORT={}".format(webhook_address, PORT))

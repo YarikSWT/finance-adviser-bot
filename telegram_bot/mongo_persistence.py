@@ -26,7 +26,7 @@ class BotData(mongoengine.Document):
 class DBHelper():
     """Class to add and get documents from a mongo database using mongoengine
     """
-    def __init__(self, dbname="persistencedb"):
+    def __init__(self, dbname="FinanceAdviserBotPersistance"):
         mongoengine.connect(host=MONGO_URI, db=dbname)
     def add_item(self, data, collection):
         if collection == "Conversations":
@@ -64,7 +64,7 @@ class MongoPersistence(BasePersistence):
         super(MongoPersistence, self).__init__(store_user_data=True,
                                                store_chat_data=True,
                                                store_bot_data=True)
-        self.persistdb = "persistancedb"
+        self.persistdb = "FinanceAdviserBotPersistance"
         self.conversation_collection = "Conversations"
         self.user_data_collection = "UserData"
         self.chat_data_collection = "ChatData"
