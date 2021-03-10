@@ -1,0 +1,25 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  telebot:
+    container_name: telebot
+    build: ./telegram_bot
+    ports:
+      - "8443:8443"
+    volumes:
+      - ./telegram_bot:/app
+    environment:
+      - ENV=PROD
+
+  api:
+    container_name: api
+    build: ./api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app
+#
+#  nxinx:
+#    image: nginx
+#    volumes:
+#      - nginx/config/default.conf:/etc/nginx/conf.d
+
