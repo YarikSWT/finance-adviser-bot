@@ -1,0 +1,50 @@
+@startuml
+
+!include config.cfg
+
+(Init)
+
+note left of (Init): Hello message, I can do .... press start
+
+(Init) -> (check_registration)
+
+(check_registration) --> Registration: if not registered yet
+(check_registration) --> Main: else if registered
+
+package Registration {
+    (RegName)
+    note right of (RegName): What is you name?
+    (RegName)-->(RegCurrency)
+    note right of (RegCurrency): Choose your currency: [$][R][E]
+    (RegCurrency) --> (RegBalance)
+    note right of (RegBalance): What is you current balance?
+    (RegBalance)-->(RegInstruction)
+    note right of (RegInstruction): Account is created, you could add transactions...
+    (RegInstruction) --> Main
+}
+
+package Main {
+    Main --> [BaseMenu]
+    note right of [BaseMenu]: Your balance XXX $. 
+    [BaseMenu] --> (Add Transaction)
+    [BaseMenu] --> (Settings)
+    [BaseMenu] --> (History)   
+
+    (Add Transaction) --> AddTransaction 
+}
+
+ package AddTransaction {
+        AddTransaction --> (ChooseCategory)
+        note right of (ChooseCategory): Choose Category [Food][House]...)
+        (ChooseCategory) --> (Amount)
+        note right of (Amount): Enter XXX$
+        (Amount) --> (Description) 
+        note right of (Description): Add description or [Skip]
+        (Description) --> (TransactionAdded)
+        note bottom of (TransactionAdded): Transaction added, your balance now XXX$
+        note bottom of (TransactionAdded): ...10 last transactions...
+        (TransactionAdded) --> [BaseMenu]
+    }
+
+
+@enduml
