@@ -29,8 +29,9 @@ from telegram.ext import (
     CallbackContext,
 )
 import utils
-from modules.registration import RegistrationModule
 
+from modules.registration import RegistrationModule
+from modules.add_transaction import AddTransactionModule
 
 # Enable logging
 logging.basicConfig(
@@ -40,27 +41,37 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
-OPEN_TRANSACTIONS, OPEN_HISTORY, OPEN_SETTINGS = range(3)
-BASE_MENU = 0
+
 
 def start(update: Update, context: CallbackContext) -> None:
     reply_text = "Hi! My name is AI Bot. Please, /register"
     update.message.reply_text(reply_text)
 
-def base_menu(update: Update, context: CallbackContext) -> None:
+
+def ping(update: Update, context: CallbackContext) -> None:
+    reply_text = "I am alive!!!!"
+    update.message.reply_text(reply_text)
+
+
+def base_menu(update: Update, context: CallbackContext):
     query = update.callback_query
-    query.answer()
+    if query:
+        query.answer()
     balance = context.user_data['balance']
     currency = context.user_data['currency']
     name = context.user_data['name']
     reply_text = f"Hey, {name} \nYour balance: {balance}{currency}\n Keep going!"
     button_list = [
-        InlineKeyboardButton("Add Transaction", callback_data=str(OPEN_TRANSACTIONS)),
-        InlineKeyboardButton("History", callback_data=str(OPEN_HISTORY)),
-        InlineKeyboardButton("Settings", callback_data=str(OPEN_SETTINGS))
+        InlineKeyboardButton("Add Transaction", callback_data='OPEN_ADD_TRANSACTION'),
+        InlineKeyboardButton("History", callback_data='OPEN_HISTORY'),
+        InlineKeyboardButton("Settings", callback_data='OPEN_SETTINGS')
     ]
     reply_markup = InlineKeyboardMarkup(utils.build_menu(button_list, n_cols=2))
-    query.edit_message_text(text=reply_text, reply_markup=reply_markup)
+    if query:
+        query.edit_message_text(text=reply_text, reply_markup=reply_markup)
+    else:
+        update.message.reply_text(text=reply_text, reply_markup=reply_markup)
+    return -1
 
 
 def main():
@@ -76,12 +87,23 @@ def main():
     start_handler = CommandHandler('start', start)
     dp.add_handler(start_handler)
 
+    ping_handler = CommandHandler('ping', ping)
+    dp.add_handler(ping_handler)
+
     menu_handler = CallbackQueryHandler(base_menu, pattern='^' + 'OPEN_BASE_MENU' + '$')
     dp.add_handler(menu_handler)
+    menu_command = CommandHandler('home', base_menu)
+    dp.add_handler(menu_command)
+
+    #   Connect modules
 
     reg_module = RegistrationModule()
     registration_handler = reg_module.get_handler()
     dp.add_handler(registration_handler)
+
+    add_transaction_module = AddTransactionModule()
+    add_transaction_handler = add_transaction_module.get_handler()
+    dp.add_handler(add_transaction_handler)
 
     # Start the Bot
     if ENV != 'PROD':
