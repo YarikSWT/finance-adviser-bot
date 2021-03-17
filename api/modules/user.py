@@ -1,12 +1,16 @@
 from flask import Blueprint, Response,request
 from database.models import User
 from modules.controllers import user as user_logic
+from mongoengine import  DoesNotExist
 
 user = Blueprint('user', __name__)
 
 @user.route('/api/user/<chat_id>', methods=['GET'])
 def get_user(chat_id):
-    user = User.objects().get(chat_id=chat_id).to_json()
+    try:
+        user = User.objects().get(chat_id=chat_id).to_json()
+    except DoesNotExist:
+        return Response(None, mimetype="application/json", status=201)
     return Response(user, mimetype="application/json", status=200)
 
 @user.route('/api/user', methods=['POST'])

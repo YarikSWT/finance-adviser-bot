@@ -11,6 +11,7 @@ class User(db.Document):
 class Wallet(db.Document):
     user = db.ReferenceField(User)
     balance = db.FloatField(required=True)
+    currency = db.StringField()
 
 class Transaction(db.Document):
     wallet = db.ReferenceField(Wallet, unique=False)

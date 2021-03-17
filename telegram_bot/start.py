@@ -42,10 +42,17 @@ logger = logging.getLogger(__name__)
 
 CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
 
+from api.api import api
+
 
 def start(update: Update, context: CallbackContext) -> None:
-    reply_text = "Hi! My name is AI Bot. Please, /register"
-    update.message.reply_text(reply_text)
+    chat_id = update.message.chat_id
+    user = api.user.get(chat_id)
+    if not user:
+        reply_text = "Hi! My name is AI Bot. Please, /register"
+        update.message.reply_text(reply_text)
+    else:
+        base_menu(update, context)
 
 
 def ping(update: Update, context: CallbackContext) -> None:

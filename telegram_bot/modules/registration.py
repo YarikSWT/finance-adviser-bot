@@ -8,6 +8,8 @@ from telegram.ext import (
 )
 import utils
 
+from api.api import api
+
 RegName, RegCurrency, RegBalance = range(3, 6)
 
 
@@ -23,6 +25,9 @@ def enter_name(update: Update, context: CallbackContext) -> None:
     context.user_data['name'] = text
     reply_text = 'Your name is ' + text
     update.message.reply_text(reply_text)
+    chat_id = update.message.chat_id
+    created_user = api.user.post(data={"chat_id": chat_id, "name": text})
+    context.user_data["bd_id"] = created_user.id
     reply_text = 'Enter currency of you wallet:'
     reply_keyboard = [
         ['$', '€', '₽']
@@ -49,6 +54,8 @@ def enter_balance(update: Update, context: CallbackContext):
 
     balance = context.user_data['balance']
     currency = context.user_data['currency']
+    chat_id = update.message.chat_id
+    api.user(chat_id).money.post(data={"balance": balance, "currency": currency})
     name = context.user_data['name']
     reply_text = f"Your data:, \n {name} \n balance: {balance}{currency}\n"
     button_list = [

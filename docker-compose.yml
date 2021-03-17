@@ -8,7 +8,8 @@ services:
     volumes:
       - ./telegram_bot:/app
     environment:
-      - ENV=PROD
+      - ENV=DEV
+#      - ENV=PROD
 
   api:
     container_name: api
@@ -18,7 +19,8 @@ services:
     volumes:
       - ./api:/app
     environment:
-      - ENV=PROD
+      - ENV=DEV
+#      - ENV=PROD
 
 #  nxinx:
 #    image: nginx
