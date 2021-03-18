@@ -8,6 +8,7 @@ from telegram.ext import (
     CallbackContext,
 )
 import utils
+from api.api import api
 
 ChooseCategory, Amount, Description, TransactionAdded = range(7, 11)
 
@@ -51,7 +52,7 @@ def enter_amount(update: Update, context: CallbackContext) -> None:
 def enter_description(update: Update, context: CallbackContext):
     query = update.callback_query
     if query:
-        description = None
+        description = ''
     else:
         description = update.message.text
     context.user_data['description'] = description
@@ -67,6 +68,7 @@ def enter_description(update: Update, context: CallbackContext):
     else:
         chat_id = update.message.chat_id
     context.bot.send_message(chat_id=chat_id, text=reply_text, reply_markup=reply_markup)
+    api.user(chat_id).transactions.post(data={"category": category, "delta": -1 * int(amount), "time": 0, "description": description})
     return -1
 
 
@@ -82,7 +84,7 @@ class AddTransactionModule:
                               MessageHandler(Filters.text, enter_description)]
             },
             fallbacks=[],
-            name="registration_conversation",
+            name="add_transaction_conversation",
             persistent=False,
         )
 

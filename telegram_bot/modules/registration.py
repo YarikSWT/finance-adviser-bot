@@ -7,7 +7,6 @@ from telegram.ext import (
     CallbackContext,
 )
 import utils
-
 from api.api import api
 
 RegName, RegCurrency, RegBalance = range(3, 6)

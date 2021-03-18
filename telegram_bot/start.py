@@ -29,9 +29,11 @@ from telegram.ext import (
     CallbackContext,
 )
 import utils
+from api.api import api
 
 from modules.registration import RegistrationModule
 from modules.add_transaction import AddTransactionModule
+from modules.history import HistoryModule
 
 # Enable logging
 logging.basicConfig(
@@ -41,8 +43,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
-
-from api.api import api
 
 
 def start(update: Update, context: CallbackContext) -> None:
@@ -64,10 +64,12 @@ def base_menu(update: Update, context: CallbackContext):
     query = update.callback_query
     if query:
         query.answer()
-    balance = context.user_data['balance']
-    currency = context.user_data['currency']
-    name = context.user_data['name']
-    reply_text = f"Hey, {name} \nYour balance: {balance}{currency}\n Keep going!"
+        chat_id = query.message.chat.id
+    else:
+        chat_id = update.message.chat_id
+    user = api.user.get(chat_id)
+    wallet = api.user(chat_id).money.get()
+    reply_text = f"Hey, {user.name} \nYour balance: {wallet.balance}{wallet.currency}\n Keep going!"
     button_list = [
         InlineKeyboardButton("Add Transaction", callback_data='OPEN_ADD_TRANSACTION'),
         InlineKeyboardButton("History", callback_data='OPEN_HISTORY'),
@@ -111,6 +113,11 @@ def main():
     add_transaction_module = AddTransactionModule()
     add_transaction_handler = add_transaction_module.get_handler()
     dp.add_handler(add_transaction_handler)
+
+    history_module = HistoryModule()
+    history_module_handler = history_module.get_handler()
+    dp.add_handler(history_module_handler)
+
 
     # Start the Bot
     if ENV != 'PROD':

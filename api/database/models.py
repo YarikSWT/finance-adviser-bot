@@ -18,6 +18,7 @@ class Transaction(db.Document):
     category = db.StringField()
     delta = db.FloatField(required=True)
     time = db.DateTimeField(required=True)
+    description = db.StringField()
 
 
 ### Where to Go ###
