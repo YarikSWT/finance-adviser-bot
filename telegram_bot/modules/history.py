@@ -10,6 +10,14 @@ from telegram.ext import (
 import utils
 from api.api import api
 
+
+def beautifyAmount(amount):
+    if(amount < 0):
+        return amount
+    else:
+        return '+' + str(amount)
+
+
 def history(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     if query:
@@ -19,7 +27,7 @@ def history(update: Update, context: CallbackContext) -> None:
 
     transactions = api.user(chat_id).transactions.get()
     total = -sum([t.delta for t in transactions])
-    historyStr = "\n".join(["{} - {} - {}".format(t.delta, t.category, t.description) for t in transactions])
+    historyStr = "\n".join(["{} - {} - {}".format(beautifyAmount(t.delta), t.category, t.description) for t in transactions])
     reply_text = "Total spending: {}  \n\n{}".format(total, historyStr)
     button_list = [
         InlineKeyboardButton("Done", callback_data='OPEN_BASE_MENU'),
