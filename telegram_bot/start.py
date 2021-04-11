@@ -31,9 +31,10 @@ from telegram.ext import (
 import utils
 from api.api import api
 
-from modules.registration import RegistrationModule
-from modules.add_transaction import AddTransactionModule
-from modules.history import HistoryModule
+from modules import RegistrationModule, AddTransactionModule, HistoryModule, AdviserModule
+# from modules.add_transaction import AddTransactionModule
+# from modules.history import HistoryModule
+# from modules.adviser import AdviserModule
 
 # Enable logging
 logging.basicConfig(
@@ -73,6 +74,7 @@ def base_menu(update: Update, context: CallbackContext):
     button_list = [
         InlineKeyboardButton("Add Transaction", callback_data='OPEN_ADD_TRANSACTION'),
         InlineKeyboardButton("History", callback_data='OPEN_HISTORY'),
+        InlineKeyboardButton("Adviser", callback_data='OPEN_ADVISER'),
         InlineKeyboardButton("Settings", callback_data='OPEN_SETTINGS')
     ]
     reply_markup = InlineKeyboardMarkup(utils.build_menu(button_list, n_cols=2))
@@ -101,23 +103,16 @@ def main():
 
     menu_handler = CallbackQueryHandler(base_menu, pattern='^' + 'OPEN_BASE_MENU' + '$')
     dp.add_handler(menu_handler)
+
     menu_command = CommandHandler('home', base_menu)
     dp.add_handler(menu_command)
 
     #   Connect modules
 
-    reg_module = RegistrationModule()
-    registration_handler = reg_module.get_handler()
-    dp.add_handler(registration_handler)
-
-    add_transaction_module = AddTransactionModule()
-    add_transaction_handler = add_transaction_module.get_handler()
-    dp.add_handler(add_transaction_handler)
-
-    history_module = HistoryModule()
-    history_module_handler = history_module.get_handler()
-    dp.add_handler(history_module_handler)
-
+    RegistrationModule(dp, base_menu)
+    AddTransactionModule(dp, base_menu)
+    HistoryModule(dp, base_menu)
+    AdviserModule(dp, base_menu)
 
     # Start the Bot
     if ENV != 'PROD':

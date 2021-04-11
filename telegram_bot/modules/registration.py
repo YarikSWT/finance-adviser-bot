@@ -67,7 +67,7 @@ def enter_balance(update: Update, context: CallbackContext):
 
 class RegistrationModule:
 
-    def __init__(self):
+    def __init__(self, dispatcher, base_menu):
         conversation_handler = ConversationHandler(
             entry_points=[CommandHandler('register', register)],
             states={
@@ -89,6 +89,7 @@ class RegistrationModule:
         )
 
         self.conversation_handler = conversation_handler
+        dispatcher.add_handler(conversation_handler)
 
     def get_handler(self):
         return self.conversation_handler

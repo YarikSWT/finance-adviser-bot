@@ -20,6 +20,9 @@ class Transaction(db.Document):
     time = db.DateTimeField(required=True)
     description = db.StringField()
 
+class DailyExpenseLimit(db.Document):
+    user = db.ReferenceField(User)
+    limit = db.FloatField()
 
 ### Where to Go ###
 
@@ -35,3 +38,4 @@ class Review(db.Document):
     chat_id = db.StringField(required=True, unique=False)
     content = db.StringField(required=True, unique=False)
     place = db.ReferenceField(Place)
+

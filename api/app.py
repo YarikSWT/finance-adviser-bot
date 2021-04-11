@@ -6,6 +6,7 @@ from database.db import initialize_db
 import logging
 
 from modules.money import money as money_api
+from modules.money import daily_expense_limit_bp
 from modules.places import places as places_api
 from modules.user import user as user_api
 
@@ -20,6 +21,8 @@ initialize_db(app)
 app.register_blueprint(money_api)
 app.register_blueprint(places_api)
 app.register_blueprint(user_api)
+app.register_blueprint(daily_expense_limit_bp, url_prefix="/api/daily_expense_limit")
+
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

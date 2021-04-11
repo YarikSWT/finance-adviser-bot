@@ -9,6 +9,8 @@ from telegram.ext import (
 )
 import utils
 from api.api import api
+from datetime import datetime
+from modules.transactions.calculations import get_daily_limit_message
 
 ChooseSpendCategory, SpendAmount, Description, TransactionAdded, ChooseType, ChooseIncomeCategory, IncomeAmount = range(
     7, 14)
@@ -121,11 +123,22 @@ def enter_description(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=chat_id, text=reply_text, reply_markup=reply_markup)
     api.user(chat_id).transactions.post(
         data={"category": category, "delta": amount, "time": 0, "description": description})
+    # Check limits
+    limit = api.user(chat_id).daily_expense_limit.get()
+    print("Limit", limit)
+    if not(not limit):
+        today_iso = datetime.utcnow().isoformat()[:10]
+        daily_trans = api.user(chat_id).transactions.get(params={'date_from': today_iso, 'date_to': today_iso})
+        print("Limit", daily_trans)
+        message = get_daily_limit_message(daily_trans, limit["limit"])
+        print("Limit", message)
+        if not(not message):
+            context.bot.send_message(chat_id=chat_id, text=message)
     return -1
 
 
 class AddTransactionModule:
-    def __init__(self):
+    def __init__(self, dispatcher, base_menu):
         conversation_handler = ConversationHandler(
             entry_points=[CallbackQueryHandler(add_transaction, pattern='^' + 'OPEN_ADD_TRANSACTION' + '$'),
                           CommandHandler('add_transaction', add_transaction)],
@@ -145,6 +158,7 @@ class AddTransactionModule:
         )
 
         self.conversation_handler = conversation_handler
+        dispatcher.add_handler(conversation_handler)
 
     def get_handler(self):
         return self.conversation_handler
