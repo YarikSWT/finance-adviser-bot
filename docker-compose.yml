@@ -10,6 +10,8 @@ services:
     environment:
 #      - ENV=DEV
       - ENV=PROD
+    networks:
+      - finance-adviser-network
 
   api:
     container_name: api
@@ -21,6 +23,8 @@ services:
     environment:
 #      - ENV=DEV
       - ENV=PROD
+    networks:
+      - finance-adviser-network
 
   nginx:
     container_name: nginx
@@ -28,4 +32,10 @@ services:
     volumes:
       - ./nginx/config:/etc/nginx/conf.d
       - ./nginx/ssl:/etc/ssl
+    networks:
+      - finance-adviser-network
 
+
+networks:
+  finance-adviser-network:
+    driver: bridge
