@@ -123,8 +123,9 @@ def main():
         logger.info("Set Webhook on {} and PORT={}".format(webhook_address, PORT))
         updater.start_webhook(listen="0.0.0.0",
                               port=PORT,
-                              url_path=TELEGRAM_TOKEN)
-        updater.bot.setWebhook(webhook_address)
+                              url_path=TELEGRAM_TOKEN,
+                              webhook_url=webhook_address)
+        # updater.bot.setWebhook(webhook_address)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since

@@ -5,6 +5,6 @@ MONGO_URI = os.getenv("MONGO_URI",'mongodb+srv://root:root@cluster0.ro0oy.mongod
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "1381540699:AAHw1Y8vTocoBHhlwcDhBXeFU8KI_kSquEc")
 PUBLIC_ADDRESS = os.getenv("PUBLIC_ADDRESS", "https://finance-adviser.leapper.com") #https://finance-adviser-bot.herokuapp.com
 RUNNING_ADDRESS = os.getenv("RUNNING_ADDRESS", "0.0.0.0")
-PORT = int(os.environ.get('PORT', '433')) #8443
+PORT = int(os.environ.get('PORT', '8443')) #8443
 API_URL = os.getenv("API_URL", "https://finance-adviser.leapper.com/api") #http://localhost:8000/api
 # mongo_DB = 'LifeBot'

@@ -4,9 +4,7 @@ services:
     container_name: telebot
     build: ./telegram_bot
     ports:
-      - "80:80"
-      - "443:443"
-      - "8433:8433"
+      - "8443:8443"
     volumes:
       - ./telegram_bot:/app
     environment:
