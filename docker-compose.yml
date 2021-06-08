@@ -4,7 +4,7 @@ services:
     container_name: telebot
     build: ./telegram_bot
     ports:
-      - "8443:8443"
+      - "80:80"
     volumes:
       - ./telegram_bot:/app
     environment:
@@ -22,8 +22,8 @@ services:
 #      - ENV=DEV
       - ENV=PROD
 
-#  nxinx:
-#    image: nginx
-#    volumes:
-#      - nginx/config/default.conf:/etc/nginx/conf.d
-#
+  nxinx:
+    image: nginx
+    volumes:
+      - nginx/config/default.conf:/etc/nginx/conf.d
+
