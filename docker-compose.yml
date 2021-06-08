@@ -5,6 +5,8 @@ services:
     build: ./telegram_bot
     ports:
       - "80:80"
+      - "443:443"
+      - "8433:8433"
     volumes:
       - ./telegram_bot:/app
     environment:
