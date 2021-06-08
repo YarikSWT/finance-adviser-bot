@@ -8,8 +8,8 @@ services:
     volumes:
       - ./telegram_bot:/app
     environment:
-      - ENV=DEV
-#      - ENV=PROD
+#      - ENV=DEV
+      - ENV=PROD
 
   api:
     container_name: api
@@ -19,11 +19,11 @@ services:
     volumes:
       - ./api:/app
     environment:
-      - ENV=DEV
-#      - ENV=PROD
+#      - ENV=DEV
+      - ENV=PROD
 
 #  nxinx:
 #    image: nginx
 #    volumes:
 #      - nginx/config/default.conf:/etc/nginx/conf.d
-
+#
