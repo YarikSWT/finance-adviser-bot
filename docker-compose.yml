@@ -26,5 +26,6 @@ services:
     container_name: nginx
     image: nginx
     volumes:
-      - nginx/config/default.conf:/etc/nginx/conf.d
+      - ./nginx/config:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/ssl
 
