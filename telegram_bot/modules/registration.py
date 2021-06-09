@@ -1,4 +1,4 @@
-from telegram import ReplyKeyboardMarkup, Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import ReplyKeyboardMarkup, Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import (
     CommandHandler,
     MessageHandler,
@@ -40,7 +40,8 @@ def enter_currency(update: Update, context: CallbackContext) -> None:
     currency = update.message.text
     context.user_data['currency'] = currency
     reply_text = 'Your currency is "{}"'.format(currency)
-    update.message.reply_text(reply_text)
+    reply_markup = ReplyKeyboardRemove()
+    update.message.reply_text(text=reply_text, reply_markup=reply_markup)
     update.message.reply_text('Enter you current balance: ')
     return RegBalance
 
