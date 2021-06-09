@@ -77,7 +77,7 @@ def enter_spend_amount(update: Update, context: CallbackContext) -> None:
 def enter_income_amount(update: Update, context: CallbackContext) -> None:
     amount = update.message.text
     context.user_data['amount'] = int(amount)
-    reply_text = 'Okay! Enter description or skip'
+    reply_text = 'Okay! Enter description or Skip'
     button_list = [
         InlineKeyboardButton("Skip", callback_data='SKIP_ENTER_DESCRIPTION'),
     ]
