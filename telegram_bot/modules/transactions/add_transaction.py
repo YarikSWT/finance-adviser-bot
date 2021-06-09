@@ -1,4 +1,4 @@
-from telegram import ReplyKeyboardMarkup, Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import ReplyKeyboardMarkup, Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import (
     CommandHandler,
     MessageHandler,
@@ -90,14 +90,15 @@ def choose_spend_category(update: Update, context: CallbackContext) -> None:
     category = update.message.text
     context.user_data['category'] = category
     reply_text = 'Okay! Enter amount of money you spent:'
-    update.message.reply_text(text=reply_text)
+    reply_markup = ReplyKeyboardRemove()
+    update.message.reply_text(text=reply_text, reply_markup=reply_markup)
     return SpendAmount
 
 
 def choose_income_category(update: Update, context: CallbackContext) -> None:
     category = update.message.text
     context.user_data['category'] = category
-    reply_text = 'Okay! Enter amount of money you Got:'
+    reply_text = 'Okay! Enter amount of money you got:'
     update.message.reply_text(text=reply_text)
     return IncomeAmount
 

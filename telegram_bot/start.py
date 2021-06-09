@@ -32,9 +32,6 @@ import utils
 from api.api import api
 
 from modules import RegistrationModule, AddTransactionModule, HistoryModule, AdviserModule
-# from modules.add_transaction import AddTransactionModule
-# from modules.history import HistoryModule
-# from modules.adviser import AdviserModule
 
 # Enable logging
 logging.basicConfig(
@@ -70,7 +67,7 @@ def base_menu(update: Update, context: CallbackContext):
         chat_id = update.message.chat_id
     user = api.user.get(chat_id)
     wallet = api.user(chat_id).money.get()
-    reply_text = f"Hey, {user.name} \nYour balance: {wallet.balance}{wallet.currency}\n Keep going!"
+    reply_text = f"Hey, {user.name} \nYour balance: {wallet.balance}{wallet.currency} \nKeep going!"
     button_list = [
         InlineKeyboardButton("Add Transaction", callback_data='OPEN_ADD_TRANSACTION'),
         InlineKeyboardButton("History", callback_data='OPEN_HISTORY'),

@@ -8,8 +8,7 @@ services:
     volumes:
       - ./telegram_bot:/app
     environment:
-      - ENV=DEV
-      - TELEGRAM_TOKEN=1807367222:AAEKm-q_Qi3UtTrMvKbYDH5xDIQG9W7AYQQ
+      - ENV=PROD
     networks:
       - finance-adviser-network
 
@@ -21,7 +20,20 @@ services:
     volumes:
       - ./api:/app
     environment:
-      - ENV=DEV
+      - ENV=PROD
+    networks:
+      - finance-adviser-network
+
+  nginx:
+    restart: always
+    container_name: nginx
+    image: nginx:1.17
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/config:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/ssl
     networks:
       - finance-adviser-network
 
