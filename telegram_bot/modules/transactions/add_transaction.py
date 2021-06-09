@@ -99,7 +99,8 @@ def choose_income_category(update: Update, context: CallbackContext) -> None:
     category = update.message.text
     context.user_data['category'] = category
     reply_text = 'Okay! Enter amount of money you got:'
-    update.message.reply_text(text=reply_text)
+    reply_markup = ReplyKeyboardRemove()
+    update.message.reply_text(text=reply_text, reply_markup=reply_markup)
     return IncomeAmount
 
 
