@@ -57,6 +57,9 @@ def ping(update: Update, context: CallbackContext) -> None:
     reply_text = "I am alive!!!!"
     update.message.reply_text(reply_text)
 
+def test_ai(update: Update, context: CallbackContext) -> None:
+    reply_text = "Excuse me. I just remind you, that you should not spend money on Food to achieve your goals!"
+    update.message.reply_text(reply_text)
 
 def base_menu(update: Update, context: CallbackContext):
     query = update.callback_query
