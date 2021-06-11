@@ -101,6 +101,9 @@ def main():
     ping_handler = CommandHandler('ping', ping)
     dp.add_handler(ping_handler)
 
+    test_ai_handler = CommandHandler('test_ai', test_ai)
+    dp.add_handler(test_ai_handler)
+
     menu_handler = CallbackQueryHandler(base_menu, pattern='^' + 'OPEN_BASE_MENU' + '$')
     dp.add_handler(menu_handler)
 
